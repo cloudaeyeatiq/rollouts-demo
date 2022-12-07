@@ -3,7 +3,7 @@ kind: Rollout
 metadata:
   name: canary-demo
 spec:
-  replicas: 5
+  replicas: 4
   revisionHistoryLimit: 1
   selector:
     matchLabels:
@@ -11,14 +11,16 @@ spec:
   strategy:
     canary:
       analysis:
-        templateName: success-rate
+        templates:
+        -   templateName: success-rate
         args:
         - name: ingress
           value: canary-demo
       canaryService: canary-demo-preview
       steps:
       - setWeight: 40
-      - pause: {}
+      - pause: 
+          duration: 100
       - setWeight: 60
       - pause:
           duration: 10
@@ -29,15 +31,21 @@ spec:
     metadata:
       labels:
         app: canary-demo
+      annotations: 
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8090"
     spec:
       containers:
-      - image: argoproj/rollouts-demo:blue
+      - image: argoproj/rollouts-demo:yellow
         imagePullPolicy: Always
         name: canary-demo
         ports:
         - containerPort: 8080
           name: http
-          protocol: TCP
+          protocol: TCP      
+        - name: metrics
+          containerPort: 8090  
         resources:
           requests:
             cpu: 5m
