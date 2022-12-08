@@ -11,8 +11,8 @@ spec:
     successCondition: len(result) == 0 || result[0] >= 0.50
     provider:
       prometheus:
-        # address: http://prometheus-server.prometheus.svc.cluster.local:80
-        address: https://aps-workspaces.us-east-2.amazonaws.com/workspaces/ws-5183df0b-8c0b-4842-8b4d-11374db447e3
+        address: http://prometheus-server.prometheus.svc.cluster.local:80
+        # address: https://aps-workspaces.us-east-2.amazonaws.com/workspaces/ws-5183df0b-8c0b-4842-8b4d-11374db447e3
         query: >+
           sum(
             rate(nginx_ingress_controller_requests{ingress="{{args.ingress}}",status!~"[4-5].*"}[20s]))
